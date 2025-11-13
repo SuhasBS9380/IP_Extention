@@ -1353,35 +1353,57 @@ async function checkUsernameOnPlatform(username, platform) {
     throw new Error(`Unknown platform: ${platform}`);
   }
   
-  // Search for exact username on platform
-  const query = `"${username}" site:${config.searchUrl}`;
+  // Search for exact username on platform with more specific query
+  const query = `"${username}" site:${config.searchUrl} inurl:${username}`;
   const searchResults = await searchGoogleViaSerpAPI(query);
   
-  // Check if exact profile exists
+  // Check if exact profile exists with stricter matching
   let exists = false;
   let profileUrl = config.profilePattern(username);
   let similarityCount = 0;
+  let exactMatchFound = false;
   
   searchResults.forEach(result => {
     if (result.link) {
       const link = result.link.toLowerCase();
+      const usernamePattern = username.toLowerCase();
       
-      // Check for exact match
-      if (link.includes(`/${username.toLowerCase()}`) || 
-          link.includes(`/@${username.toLowerCase()}`)) {
-        exists = true;
-        profileUrl = result.link;
+      // More accurate exact match checking
+      const exactPatterns = [
+        `/${usernamePattern}$`,
+        `/${usernamePattern}/`,
+        `/${usernamePattern}?`,
+        `/@${usernamePattern}$`,
+        `/@${usernamePattern}/`,
+        `/@${usernamePattern}?`,
+        `/in/${usernamePattern}$`,
+        `/in/${usernamePattern}/`
+      ];
+      
+      // Check for exact match with word boundaries
+      for (const pattern of exactPatterns) {
+        if (link.includes(pattern.replace('$', ''))) {
+          // Verify it's not a substring of a longer username
+          const regex = new RegExp(pattern.replace('$', '(?:[/?#]|$)'));
+          if (regex.test(link)) {
+            exists = true;
+            exactMatchFound = true;
+            profileUrl = result.link;
+            break;
+          }
+        }
       }
       
-      // Count similar usernames
+      // Count similar usernames (only if they match the pattern)
       if (config.checkPattern.test(link)) {
         similarityCount++;
       }
     }
   });
   
+  // If no exact match found but results exist, likely available
   // Calculate similarity percentage (how common similar usernames are)
-  const similarityPercentage = Math.min(100, (similarityCount / 10) * 100);
+  const similarityPercentage = exactMatchFound ? 100 : Math.min(90, (similarityCount / 10) * 100);
   
   return {
     id: `${platform}_${username}`,

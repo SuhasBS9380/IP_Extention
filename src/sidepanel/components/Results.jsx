@@ -76,7 +76,7 @@ function ResultCard({ result, type }) {
           )}
         </div>
       </div>
-      {result.url && result.url !== '#' && (
+      {result.url && result.url !== '#' && !result.metadata?.available && (
         <button className="open-link" onClick={handleOpen}>
           Open
         </button>
