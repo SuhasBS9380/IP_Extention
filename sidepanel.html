@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Social Media Scanner</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <div id="side-panel-container">
+    <!-- Header -->
+    <header>
+      <div class="header-content">
+        <h1>Social Media Scanner</h1>
+        <button id="close-panel" class="icon-button" title="Close panel">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10 8.586L3.707 2.293 2.293 3.707 8.586 10l-6.293 6.293 1.414 1.414L10 11.414l6.293 6.293 1.414-1.414L11.414 10l6.293-6.293-1.414-1.414L10 8.586z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Mode Navigation Tabs -->
+    <nav id="mode-tabs">
+      <button class="tab active" data-mode="image">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M14 2H2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1zM2 13V3h12v10H2z"/>
+          <path d="M4.5 7a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM13 11l-3-3-2 2-2-2-3 3h10z"/>
+        </svg>
+        Image Search
+      </button>
+      <button class="tab" data-mode="username">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 1a6 6 0 0 0-6 6h12a6 6 0 0 0-6-6z"/>
+        </svg>
+        Username Check
+      </button>
+    </nav>
+
+    <!-- Input Section (Dynamic content based on active tab) -->
+    <section id="input-section">
+      <!-- Image Search Input (default visible) -->
+      <div id="image-input-container" class="input-container active">
+        <div class="input-group">
+          <label>Upload Image</label>
+          <div id="drop-zone" class="drop-zone">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="currentColor" opacity="0.3">
+              <path d="M38 18h-8V6H18v12h-8l14 14 14-14zM10 36v4h28v-4H10z"/>
+            </svg>
+            <p>Drag & drop an image here</p>
+            <p class="hint">or</p>
+            <button id="file-picker-btn" class="secondary-button">Choose File</button>
+            <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/gif" hidden>
+            <p class="file-info">Max 5MB • JPG, PNG, WEBP, GIF</p>
+          </div>
+        </div>
+
+        <div class="divider">
+          <span>OR</span>
+        </div>
+
+        <div class="input-group">
+          <label for="image-url-input">Image URL</label>
+          <input type="url" id="image-url-input" placeholder="https://example.com/image.jpg">
+          <p class="hint" style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">
+            💡 Tip: Right-click on a profile photo → "Copy Image Address"
+          </p>
+        </div>
+
+        <div id="image-preview-container" class="preview-container" style="display: none;">
+          <img id="image-preview" alt="Preview">
+          <button id="remove-image" class="icon-button small">×</button>
+        </div>
+
+        <button id="search-image-btn" class="primary-button" disabled>Search Image</button>
+      </div>
+
+      <!-- Username Check Input (hidden by default) -->
+      <div id="username-input-container" class="input-container">
+        <div class="input-group">
+          <label for="username-input">Username</label>
+          <input type="text" id="username-input" placeholder="Enter username (e.g., john_doe)" maxlength="30">
+          <span id="username-char-count" class="char-count">0/30</span>
+          <p id="username-error" class="error-message" style="display: none;"></p>
+        </div>
+
+        <div class="input-group">
+          <label for="platform-select">Check on Platform</label>
+          <select id="platform-select" class="platform-select">
+            <option value="all">All Platforms</option>
+            <option value="twitter">Twitter / X</option>
+            <option value="instagram">Instagram</option>
+            <option value="tiktok">TikTok</option>
+            <option value="linkedin">LinkedIn</option>
+            <option value="facebook">Facebook</option>
+          </select>
+        </div>
+
+        <button id="check-username-btn" class="primary-button" disabled>Check Availability</button>
+      </div>
+    </section>
+
+    <!-- Results Section -->
+    <section id="results-section" style="display: none;">
+      <!-- Platform Filter -->
+      <nav id="platform-filter">
+        <button class="filter active" data-platform="all">
+          All <span class="count"></span>
+        </button>
+        <button class="filter" data-platform="twitter">
+          Twitter <span class="count"></span>
+        </button>
+        <button class="filter" data-platform="instagram">
+          Instagram <span class="count"></span>
+        </button>
+        <button class="filter" data-platform="tiktok">
+          TikTok <span class="count"></span>
+        </button>
+      </nav>
+
+      <!-- Results Container -->
+      <div id="results-container"></div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <select id="search-history" disabled>
+          <option value="">Search History</option>
+        </select>
+        <button id="clear-history" class="text-button" disabled>Clear</button>
+      </div>
+    </footer>
+  </div>
+
+  <script src="utils/image-processor.js"></script>
+  <script src="sidepanel.js"></script>
+</body>
+</html>
